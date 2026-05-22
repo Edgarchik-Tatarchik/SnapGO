@@ -1,0 +1,9 @@
+{
+  "app_title": "日本語サインチューター",
+  "scan_button": "スキャン",
+  "upload_button": "アップロード",
+  "recognize_button": "認識する",
+  "loading_model": "モデルを読み込んでいます...",
+  "result_label": "認識結果",
+  "translation_label": "翻訳"
+}
