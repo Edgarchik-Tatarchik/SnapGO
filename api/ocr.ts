@@ -19,7 +19,7 @@ export default async function handler(req: Request) {
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
-          { type: 'text', text: 'Extract ALL Japanese text from this image, then translate to English.\nORIGINAL: [japanese text]\nTRANSLATION: [english translation]' }
+          { type: 'text', text: 'Extract ALL Japanese text from this image and translate to English. Respond in plain text only, no markdown:\nORIGINAL: [japanese text here]\nTRANSLATION: [english translation here]' }
         ]
       }]
     })
