@@ -6,9 +6,8 @@ export async function extractAndTranslate(imageData: string) {
   })
 
   const data = await response.json()
-  console.log('API response:', JSON.stringify(data))
   const text = data.content[0].text
-  const original = text.match(/ORIGINAL: (.+)/)?.[1] ?? ''
-  const translated = text.match(/TRANSLATION: (.+)/)?.[1] ?? ''
+  const original = text.match(/ORIGINAL:\s*(.+?)(?:\n|$)/s)?.[1]?.trim() ?? ''
+  const translated = text.match(/TRANSLATION:\s*(.+?)(?:\n|$)/s)?.[1]?.trim() ?? ''
   return { original, translated }
 }
