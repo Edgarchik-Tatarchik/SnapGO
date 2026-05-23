@@ -1,20 +1,20 @@
 import { useState, useCallback } from 'react'
-import { extractText } from '../lib/ocr'
+import { extractAndTranslate } from '../lib/ocr'
 
 type OCRState = 'idle' | 'processing' | 'done' | 'error'
 
 export function useOCR() {
   const [state, setState] = useState<OCRState>('idle')
-  const [progress, setProgress] = useState(0)
-  const [result, setResult] = useState<string | null>(null)
+  const [original, setOriginal] = useState<string | null>(null)
+  const [translated, setTranslated] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const runOCR = useCallback(async (imageData: string) => {
     try {
       setState('processing')
-      setProgress(0)
-      const text = await extractText(imageData, setProgress)
-      setResult(text)
+      const result = await extractAndTranslate(imageData)
+      setOriginal(result.original)
+      setTranslated(result.translated)
       setState('done')
     } catch (err) {
       console.error(err)
@@ -23,5 +23,5 @@ export function useOCR() {
     }
   }, [])
 
-  return { state, progress, result, error, runOCR }
+  return { state, original, translated, error, runOCR }
 }

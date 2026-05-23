@@ -8,7 +8,7 @@ type Step = 'camera' | 'preview' | 'processing'
 export function ScanPage() {
   const [step, setStep] = useState<Step>('camera')
   const [imageData, setImageData] = useState<string | null>(null)
-  const { state, progress, result, error, runOCR } = useOCR()
+  const { state, original, translated, error, runOCR } = useOCR()
 
   const handleCapture = (data: string) => {
     setImageData(data)
@@ -32,35 +32,29 @@ export function ScanPage() {
     <ImagePreview imageData={imageData} onConfirm={handleConfirm} onRetake={handleRetake} />
   )
 
-  if (step === 'processing') {
-    if (state === 'processing') return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-6 p-8">
-        <p className="text-xl">認識中...</p>
-        <div className="w-full max-w-sm bg-gray-700 rounded-full h-3">
-          <div
-            className="bg-blue-500 h-3 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <p className="text-gray-400">{progress}%</p>
-      </div>
-    )
+ if (state === 'processing') return (
+  <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
+    <p className="text-xl">認識中...</p>
+    <p className="text-gray-400 text-sm">少々お待ちください</p>
+  </div>
+)
 
     if (state === 'done') return (
-      <div className="flex flex-col h-screen bg-gray-900 text-white p-6 gap-4">
-        <img src={imageData!} className="w-full max-h-48 object-contain rounded-xl" />
-        <div className="bg-gray-800 rounded-xl p-4">
-          <p className="text-gray-400 text-sm mb-2">認識結果</p>
-          <p className="text-white text-lg">{result}</p>
-        </div>
-        <button
-          onClick={handleRetake}
-          className="mt-auto py-4 rounded-xl bg-blue-600 text-white text-lg"
-        >
-          もう一度スキャン
-        </button>
-      </div>
-    )
+  <div className="flex flex-col h-screen bg-gray-900 text-white p-6 gap-4">
+    <img src={imageData!} className="w-full max-h-48 object-contain rounded-xl" />
+    <div className="bg-gray-800 rounded-xl p-4">
+      <p className="text-gray-400 text-sm mb-1">認識結果</p>
+      <p className="text-white text-lg">{original}</p>
+    </div>
+    <div className="bg-gray-800 rounded-xl p-4">
+      <p className="text-gray-400 text-sm mb-1">Translation</p>
+      <p className="text-white text-lg">{translated}</p>
+    </div>
+    <button onClick={handleRetake} className="mt-auto py-4 rounded-xl bg-blue-600 text-white text-lg">
+      もう一度スキャン
+    </button>
+  </div>
+)
 
     if (state === 'error') return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
@@ -71,4 +65,3 @@ export function ScanPage() {
       </div>
     )
   }
-}
