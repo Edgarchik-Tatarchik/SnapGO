@@ -84,7 +84,7 @@ export function ScanPage() {
           />
           <button
             onClick={handleCorrection}
-            className="mt-2 w-full py-2 rounded-lg bg-green-600 text-white"
+            className="mt-2 w-full py-2 rounded-lg bg-green-600 text-white cursor-pointer hover:scale-105 transition-transform"
           >
             修正を保存
           </button>
