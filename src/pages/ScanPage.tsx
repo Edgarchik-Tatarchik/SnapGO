@@ -97,10 +97,11 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
         <p className="text-green-400 text-center">✓ 修正が保存されました</p>
       )}
 
-      <button onClick={handleRetake} className="mt-auto py-4 rounded-xl bg-blue-600 text-white text-lg">
+      <button onClick={handleRetake} className="mt-auto py-4 rounded-xl bg-blue-600 text-white text-lg cursor-pointer hover:bg-gray-600 active:scale-95 transition-all">
         もう一度スキャン
       </button>
-      <button onClick={onGoHome}>メニューに戻る</button>
+      <button onClick={onGoHome} className="py-4 rounded-xl bg-gray-700 text-white text-lg 
+             cursor-pointer hover:bg-gray-600 active:scale-95 transition-all">メニューに戻る</button>
     </div>
   )
 }

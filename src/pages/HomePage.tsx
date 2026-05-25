@@ -14,13 +14,15 @@ export function HomePage({ onStartCamera, onViewSaved }: HomePageProps) {
       <div className="flex flex-col w-full max-w-sm gap-4">
         <button
           onClick={onStartCamera}
-          className="py-4 rounded-xl bg-blue-600 text-white text-lg font-bold"
+          className="py-4 rounded-xl bg-blue-600 text-white text-lg font-bold 
+             cursor-pointer hover:bg-blue-500 active:scale-95 transition-all"
         >
             📷 写真を撮る
         </button>
         <button
           onClick={onViewSaved}
-          className="py-4 rounded-xl bg-gray-700 text-white text-lg"
+          className="py-4 rounded-xl bg-gray-700 text-white text-lg 
+             cursor-pointer hover:bg-gray-600 active:scale-95 transition-all"
         >
             📂 保存された写真を見る
         </button>
