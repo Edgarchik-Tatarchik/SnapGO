@@ -25,7 +25,6 @@ export async function saveScan(
 
   const { data: userData } = await supabase.auth.getUser()
   const userId = userData.user?.id
-  console.log('User ID:', userId)
   if (!userId) return null
 
   const { error: uploadError } = await supabase.storage
