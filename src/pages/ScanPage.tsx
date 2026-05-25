@@ -6,7 +6,11 @@ import { saveScan, saveCorrection } from '../lib/storage'
 
 type Step = 'camera' | 'preview' | 'processing' | 'result'
 
-export function ScanPage() {
+interface ScanPageProps {
+  onGoHome: () => void
+}
+
+export function ScanPage({ onGoHome }: ScanPageProps) {
   const [step, setStep] = useState<Step>('camera')
   const [imageData, setImageData] = useState<string | null>(null)
   const [scanId, setScanId] = useState<string | null>(null)
@@ -71,7 +75,7 @@ export function ScanPage() {
         <p className="text-white text-lg">{translated}</p>
       </div>
 
-      {/* Поле коррекции */}
+      
       {!correctionSaved ? (
         <div className="bg-gray-800 rounded-xl p-4">
           <p className="text-gray-400 text-sm mb-2">翻訳を修正する</p>
@@ -96,6 +100,7 @@ export function ScanPage() {
       <button onClick={handleRetake} className="mt-auto py-4 rounded-xl bg-blue-600 text-white text-lg">
         もう一度スキャン
       </button>
+      <button onClick={onGoHome}>メニューに戻る</button>
     </div>
   )
 }
