@@ -15,6 +15,18 @@ As a foreigner living in Japan, I constantly encountered signs and notices I cou
 
 ---
 
+## スクリーンショット / Screenshots
+
+| ホーム画面 | カメラ | スキャン結果 |
+|:---:|:---:|:---:|
+| ![Menu](docs/screenshots/menu.JPG) | ![Camera](docs/screenshots/photo2.JPG) | ![Result](docs/screenshots/translate2.JPG) |
+| メインメニュー | カメラ起動 | OCR + 翻訳 |
+
+| 修正フォーム | 保存履歴 | 詳細表示 |
+|:---:|:---:|:---:|
+| ![More example](docs/screenshots/photo1.JPG) | ![Confirm](docs/screenshots/translate1.JPG) | ![History](docs/screenshots/photos.JPG) |
+| 追加例 | 確認画面 | 過去のスキャン |            
+
 ## 機能 / Features
 
 | 機能 | 詳細 |
