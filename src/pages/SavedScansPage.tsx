@@ -32,7 +32,7 @@ export function SavedScansPage({ onBack }: SavedScansPageProps) {
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <div className="flex items-center gap-4 p-4 border-b border-gray-700">
-        <button onClick={onBack} className="text-blue-400">← 戻る</button>
+        <button onClick={onBack} className="text-blue-400 cursor-pointer  hover:scale-105 transition-transform">← 戻る</button>
         <h2 className="text-lg font-bold">保存された写真</h2>
       </div>
       {loading ? (
