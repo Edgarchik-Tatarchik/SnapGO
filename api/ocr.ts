@@ -9,7 +9,7 @@ export default async function handler(req: Request) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'x-api-key': (process as any).env.ANTHROPIC_API_KEY,
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
@@ -19,7 +19,10 @@ export default async function handler(req: Request) {
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
-          { type: 'text', text: 'Extract ALL Japanese text from this image and translate to English. Respond in plain text only, no markdown:\nORIGINAL: [japanese text here]\nTRANSLATION: [english translation here]' }
+          {
+            type: 'text',
+            text: 'Extract ALL Japanese text from this image and translate to English. Also generate 2 plausible but INCORRECT English translations that could trick someone unsure of the real meaning — same general category, clearly wrong once you know the answer. Plain text only, no markdown:\nORIGINAL: [japanese text]\nTRANSLATION: [correct translation]\nWRONG1: [plausible incorrect translation]\nWRONG2: [plausible incorrect translation]'
+          }
         ]
       }]
     })

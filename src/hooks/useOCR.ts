@@ -10,22 +10,22 @@ export function useOCR() {
   const [error, setError] = useState<string | null>(null)
 
   const runOCR = useCallback(async (
-  imageData: string,
-  onDone?: (original: string, translated: string) => void
-) => {
-  try {
-    setState('processing')
-    const result = await extractAndTranslate(imageData)
-    setOriginal(result.original)
-    setTranslated(result.translated)
-    setState('done')
-    onDone?.(result.original, result.translated)
-  } catch (err) {
-    console.error(err)
-    setError('認識に失敗しました')
-    setState('error')
-  }
-}, [])
+    imageData: string,
+    onDone?: (original: string, translated: string, distractors: string[]) => void
+  ) => {
+    try {
+      setState('processing')
+      const result = await extractAndTranslate(imageData)
+      setOriginal(result.original)
+      setTranslated(result.translated)
+      setState('done')
+      onDone?.(result.original, result.translated, result.distractors)
+    } catch (err) {
+      console.error(err)
+      setError('認識に失敗しました')
+      setState('error')
+    }
+  }, [])
 
   return { state, original, translated, error, runOCR }
 }

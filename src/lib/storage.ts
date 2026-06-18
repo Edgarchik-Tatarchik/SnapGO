@@ -18,7 +18,8 @@ export async function saveCorrection(
 export async function saveScan(
     imageData: string,
     ocrText: string,
-    translatedText: string
+    translatedText: string,
+    distractors: string[]
 ): Promise<string | null> {
   const blob = await fetch(imageData).then(r => r.blob())
   const fileName = `${Date.now()}.jpg`
@@ -45,7 +46,8 @@ export async function saveScan(
       user_id: userId,
       image_url: urlData.publicUrl,
       ocr_text: ocrText,
-      translated_text: translatedText
+      translated_text: translatedText,
+      quiz_distractors: distractors.length === 2 ? distractors: null
     })
     .select('id')
     .single()

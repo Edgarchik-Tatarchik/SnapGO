@@ -9,5 +9,7 @@ export async function extractAndTranslate(imageData: string) {
   const text = data.content[0].text
   const original = text.match(/ORIGINAL:\s*(.+?)(?:\n|$)/s)?.[1]?.trim() ?? ''
   const translated = text.match(/TRANSLATION:\s*(.+?)(?:\n|$)/s)?.[1]?.trim() ?? ''
-  return { original, translated }
+  const wrong1 = text.match(/WRONG1:\s*(.+?)(?:\n|$)/)?.[1]?.trim() ?? ''
+  const wrong2 = text.match(/WRONG2:\s*(.+?)(?:\n|$)/)?.[1]?.trim() ?? ''
+  return { original, translated, distractors: [wrong1,wrong2].filter(Boolean) }
 }

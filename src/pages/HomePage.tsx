@@ -2,9 +2,10 @@
 interface HomePageProps {
   onStartCamera: () => void
   onViewSaved: () => void
+  onStartQuiz: () => void
 }
 
-export function HomePage({ onStartCamera, onViewSaved }: HomePageProps) {
+export function HomePage({ onStartCamera, onViewSaved, onStartQuiz }: HomePageProps) {
     return  (
              <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-8 p-8">
       <div className="text-center">
@@ -25,6 +26,9 @@ export function HomePage({ onStartCamera, onViewSaved }: HomePageProps) {
              cursor-pointer hover:bg-gray-600 active:scale-95 transition-all"
         >
             📂 保存された写真を見る
+        </button>
+        <button onClick={onStartQuiz} className="py-4 rounded-xl bg-purple-600 text-white text-lg cursor-pointer hover:bg-purple-500 active:scale-95 transition-all">
+          🎯 クイズに挑戦する
         </button>
         </div>
     </div>
