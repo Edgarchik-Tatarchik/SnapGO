@@ -61,3 +61,23 @@ export async function saveScan(
   return data.id
   
 }
+
+
+export async function deleteScan(scanId: string, imageUrl: string): Promise<boolean>{
+  const storagePath = imageUrl.match(/\/signs\/(.+)$/)?.[1]
+  if(storagePath){
+    const{error: storageError} = await supabase.storage
+    .from('signs')
+    .remove([storagePath])
+    if(storageError){
+      console.error('Storage delete error: ', storageError)
+    }
+  }
+    const {error} = await supabase.from('scans').delete().eq('id',scanId)
+    if(error){
+      console.error('DB delete error:', error)
+      return false
+    }
+    return true
+}
+
