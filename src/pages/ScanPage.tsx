@@ -29,8 +29,8 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
   await runOCR(imageData, handleOCRDone)
 }
 
-  const handleOCRDone = async (orig: string, trans: string, distractors: string[]) => {
-    const id = await saveScan(imageData!, orig, trans, distractors)
+  const handleOCRDone = async (orig: string, trans: string, distractors: string[], relatedWords: { japanese: string; english: string }[]) => {
+    const id = await saveScan(imageData!, orig, trans, distractors, relatedWords)
     setScanId(id)
     setStep('result')
   }

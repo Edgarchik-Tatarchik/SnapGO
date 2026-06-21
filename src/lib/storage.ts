@@ -19,7 +19,8 @@ export async function saveScan(
     imageData: string,
     ocrText: string,
     translatedText: string,
-    distractors: string[]
+    distractors: string[],
+    relatedWords: {japanese: string, english: string}[]
 ): Promise<string | null> {
   const blob = await fetch(imageData).then(r => r.blob())
   const fileName = `${Date.now()}.jpg`
@@ -47,7 +48,8 @@ export async function saveScan(
       image_url: urlData.publicUrl,
       ocr_text: ocrText,
       translated_text: translatedText,
-      quiz_distractors: distractors.length === 2 ? distractors: null
+      quiz_distractors: distractors.length === 2 ? distractors: null,
+      related_words: relatedWords.length > 0 ? relatedWords : null
     })
     .select('id')
     .single()

@@ -21,7 +21,7 @@ export default async function handler(req: Request) {
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
           {
             type: 'text',
-            text: 'Extract ALL Japanese text from this image and translate to English. Also generate 2 plausible but INCORRECT English translations that could trick someone unsure of the real meaning — same general category, clearly wrong once you know the answer. Plain text only, no markdown:\nORIGINAL: [japanese text]\nTRANSLATION: [correct translation]\nWRONG1: [plausible incorrect translation]\nWRONG2: [plausible incorrect translation]'
+            text: 'Extract ALL Japanese text from this image and translate to English. Also generate 2 plausible but INCORRECT English translations for the quiz. Then provide 3 related Japanese words or short phrases that a learner might encounter in the same context, with their English translations. Plain text only, no markdown:\nORIGINAL: [japanese text]\nTRANSLATION: [correct english translation]\nWRONG1: [plausible incorrect translation]\nWRONG2: [plausible incorrect translation]\nRELATED1: [japanese word or phrase] = [english translation]\nRELATED2: [japanese word or phrase] = [english translation]\nRELATED3: [japanese word or phrase] = [english translation]'
           }
         ]
       }]

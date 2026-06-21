@@ -11,7 +11,7 @@ export function useOCR() {
 
   const runOCR = useCallback(async (
     imageData: string,
-    onDone?: (original: string, translated: string, distractors: string[]) => void
+    onDone?: (original: string, translated: string, distractors: string[],relatedWords: { japanese: string; english: string }[]) => void
   ) => {
     try {
       setState('processing')
@@ -19,7 +19,7 @@ export function useOCR() {
       setOriginal(result.original)
       setTranslated(result.translated)
       setState('done')
-      onDone?.(result.original, result.translated, result.distractors)
+      onDone?.(result.original, result.translated, result.distractors, result.relatedWords)
     } catch (err) {
       console.error(err)
       setError('認識に失敗しました')
