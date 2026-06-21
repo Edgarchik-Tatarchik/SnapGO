@@ -25,7 +25,7 @@ async function supabaseFetch(path: string, options?: RequestInit) {
 }
 
 export default async function handler(req: Request) {
-    const authHeader = req.headers.get('authorization')
+    const authHeader = (req as any).headers['authorization']
     if (authHeader !== `Bearer ${(process as any).env.CRON_SECRET}`) {
         return new Response('Unauthorized', { status: 401 })
     }
