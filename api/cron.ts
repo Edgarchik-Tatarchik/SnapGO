@@ -69,6 +69,7 @@ export default async function handler(req: Request) {
 
             const words = scans
             .flatMap((s: any) => s.related_words ?? [])
+            .sort(() => Math.random() - 0.5)
             .slice(0, 3)
             .map((w: any) => w.japanese)
             .join('・')
