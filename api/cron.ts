@@ -47,7 +47,7 @@ export default async function handler(req: Request) {
             if (isInactive) {
                 await sendPush(sub.subscription, {
                     title: 'SignLens 👋',
-                    body: 'お久しぶりです！クイズで腕試ししませんか？',
+                    body: 'しばらく練習していませんね。クイズで腕試ししませんか？',
                     url: '/?screen=quiz'
                 })
                 continue
@@ -77,7 +77,7 @@ export default async function handler(req: Request) {
 
             await sendPush(sub.subscription, {
                 title: `SignLens ${greeting}`,
-                body: `今週のまとめ:\n📸 写真: ${scans.length}枚\n✅ 正解: ${correct}問\n❌ 不正解: ${incorrect}問${words ? `\n💡 単語: ${words}` : ''}`,
+                body: `今週のまとめ:\n📸 写真: ${scans.length}枚 ✅ 正解: ${correct}問 ❌ 不正解: ${incorrect}問${words ? ` 💡 単語: ${words}` : ''}`,
                 url: '/?screen=quiz'
             })
         } catch (err) {
