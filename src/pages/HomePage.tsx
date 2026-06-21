@@ -16,7 +16,7 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
       </button>
 
       <div className="text-center">
-        <img src="/icon-228.png" className="w-32 h-32 mb-6 rounded-2xl" />
+        <img src="/icon-228.png" className="w-40 h-40 mb-6 rounded-2xl" />
         <h1 className="text-3xl font-bold mb-2">サインレンズ</h1>
         <p className="text-gray-400">日本語サインを翻訳する</p>
       </div>
