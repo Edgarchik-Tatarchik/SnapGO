@@ -50,46 +50,43 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
           <div>
             <p className="text-white font-medium">プッシュ通知</p>
             <p className="text-gray-400 text-sm">毎日12時に学習まとめをお届けします</p>
-          </div>
-          {loading ? (
-            <div className="w-12 h-6 bg-gray-600 rounded-full" />
-          ) : (
+            </div>
+            {loading ? (
+              <div className="w-12 h-6 bg-gray-600 rounded-full flex-shrink-0" />
+            ) : (
             <button
-              onClick={handleToggle}
-              disabled={toggling}
-              className={`w-12 h-6 rounded-full transition-colors duration-200 relative cursor-pointer disabled:opacity-50 ${
-                pushEnabled ? 'bg-blue-600' : 'bg-gray-600'
-              }`}
-            >
+            onClick={handleToggle}
+            disabled={toggling}
+            className={`w-12 h-6 rounded-full transition-colors duration-200 relative cursor-pointer disabled:opacity-50 flex-shrink-0 ${
+              pushEnabled ? 'bg-blue-600' : 'bg-gray-600'
+            }`}>
               <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ${
                 pushEnabled ? 'translate-x-7' : 'translate-x-1'
-              }`} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2 p-4">
-        <p className="text-gray-400 text-xs uppercase tracking-wider px-2 mb-1">アカウント</p>
-        <div className="bg-gray-800 rounded-xl p-4">
-          <p className="text-gray-400 text-sm">ユーザーID</p>
-          <p className="text-white text-sm font-mono mt-1">
-            {userId ? `${userId.slice(0, 8)}...` : '—'}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2 p-4">
-        <p className="text-gray-400 text-xs uppercase tracking-wider px-2 mb-1">アプリについて</p>
-        <div className="bg-gray-800 rounded-xl p-4 flex flex-col gap-2">
-          <div className="flex justify-between">
-            <p className="text-gray-400 text-sm">バージョン</p>
-            <p className="text-white text-sm">1.0.0</p>
-          </div>
-          <div className="flex justify-between">
-            <p className="text-gray-400 text-sm">© 2026</p>
-            <p className="text-white text-sm">SignLens</p>
-          </div>
+                }`} />
+                </button>
+              )}
+              </div>
+              </div>
+              <div className="flex flex-col gap-2 p-4">
+                <p className="text-gray-400 text-xs uppercase tracking-wider px-2 mb-1">アカウント</p>
+                <div className="bg-gray-800 rounded-xl p-4">
+                  <p className="text-gray-400 text-sm">ユーザーID</p>
+                  <p className="text-white text-sm font-mono mt-1">
+                    {userId ? `${userId.slice(0, 8)}...` : '—'}
+                    </p>
+                    </div>
+                    </div>
+                    <div className="flex flex-col gap-2 p-4">
+                      <p className="text-gray-400 text-xs uppercase tracking-wider px-2 mb-1">アプリについて</p>
+                      <div className="bg-gray-800 rounded-xl p-4 flex flex-col gap-2">
+                        <div className="flex justify-between">
+                          <p className="text-gray-400 text-sm">バージョン</p>
+                          <p className="text-white text-sm">1.0.0</p>
+                          </div>
+                          <div className="flex justify-between">
+                            <p className="text-gray-400 text-sm">© 2026</p>
+                            <p className="text-white text-sm">SignLens</p>
+                </div>
         </div>
       </div>
     </div>
