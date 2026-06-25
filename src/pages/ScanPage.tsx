@@ -3,6 +3,7 @@ import { Camera } from '../components/Camera'
 import { ImagePreview } from '../components/ImagePreview'
 import { useOCR } from '../hooks/useOCR'
 import { saveScan, saveCorrection } from '../lib/storage'
+import type { ScanCategory } from '../lib/ocr'
 
 type Step = 'camera' | 'preview' | 'processing' | 'result'
 
@@ -14,6 +15,7 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
   const [step, setStep] = useState<Step>('camera')
   const [imageData, setImageData] = useState<string | null>(null)
   const [scanId, setScanId] = useState<string | null>(null)
+  const [scannedCategory, setScannedCategory] = useState<ScanCategory>('other')
   const [correction, setCorrection] = useState('')
   const [correctionSaved, setCorrectionSaved] = useState(false)
   const { original, translated, runOCR } = useOCR()
@@ -24,13 +26,20 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
   }
 
   const handleConfirm = async () => {
-  if (!imageData) return
-  setStep('processing')
-  await runOCR(imageData, handleOCRDone)
-}
+    if (!imageData) return
+    setStep('processing')
+    await runOCR(imageData, handleOCRDone)
+  }
 
-  const handleOCRDone = async (orig: string, trans: string, distractors: string[], relatedWords: { japanese: string; english: string }[]) => {
-    const id = await saveScan(imageData!, orig, trans, distractors, relatedWords)
+  const handleOCRDone = async (
+    orig: string,
+    trans: string,
+    distractors: string[],
+    relatedWords: { japanese: string; english: string }[],
+    category: ScanCategory
+  ) => {
+    setScannedCategory(category)
+    const id = await saveScan(imageData!, orig, trans, distractors, relatedWords, category)
     setScanId(id)
     setStep('result')
   }
@@ -46,15 +55,15 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
     setScanId(null)
     setCorrection('')
     setCorrectionSaved(false)
+    setScannedCategory('other')
     setStep('camera')
   }
 
-  if (step === 'camera') return <Camera onCapture={handleCapture} />
+  if (step === 'camera') return <Camera onCapture={handleCapture} onGoHome={onGoHome} />
 
   if (step === 'preview' && imageData) return (
-    <ImagePreview imageData={imageData} onConfirm={handleConfirm} onRetake={handleRetake} />
+  <ImagePreview imageData={imageData} onConfirm={handleConfirm} onRetake={handleRetake} onGoHome={onGoHome} />
   )
-
   if (step === 'processing') return (
     <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
       <p className="text-xl">認識中...</p>
@@ -62,7 +71,7 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
   )
 
   if (step === 'result') return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white p-6 gap-4">
+  <div className="flex flex-col min-h-screen bg-gray-900 text-white p-6 gap-4 pb-8">
       <img src={imageData!} className="w-full max-h-48 object-contain rounded-xl" />
 
       <div className="bg-gray-800 rounded-xl p-4">
@@ -75,7 +84,12 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
         <p className="text-white text-lg">{translated}</p>
       </div>
 
-      
+      <div className="bg-gray-800 rounded-xl p-3">
+        <p className="text-gray-500 text-xs">
+          カテゴリー: {scannedCategory}
+        </p>
+      </div>
+
       {!correctionSaved ? (
         <div className="bg-gray-800 rounded-xl p-4">
           <p className="text-gray-400 text-sm mb-2">翻訳を修正する</p>
@@ -94,14 +108,15 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
           </button>
         </div>
       ) : (
-        <p className="text-green-400 text-center">✓ 修正が保存されました</p>
+        <p className="text-green-400 text-center">修正が保存されました</p>
       )}
 
       <button onClick={handleRetake} className="mt-auto py-4 rounded-xl bg-blue-600 text-white text-lg cursor-pointer hover:bg-gray-600 active:scale-95 transition-all">
         もう一度スキャン
       </button>
-      <button onClick={onGoHome} className="py-4 rounded-xl bg-gray-700 text-white text-lg 
-             cursor-pointer hover:bg-gray-600 active:scale-95 transition-all">メニューに戻る</button>
+      <button onClick={onGoHome} className="py-4 rounded-xl bg-gray-700 text-white text-lg cursor-pointer hover:bg-gray-600 active:scale-95 transition-all">
+        メニューに戻る
+      </button>
     </div>
   )
 }

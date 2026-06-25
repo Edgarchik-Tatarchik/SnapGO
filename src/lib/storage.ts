@@ -1,4 +1,6 @@
-import {supabase} from './supabase'
+import { supabase } from './supabase'
+import type { ScanCategory } from './ocr'
+
 
 export async function saveCorrection(
   scanId: string,
@@ -10,17 +12,18 @@ export async function saveCorrection(
 
   if (error) console.error('Correction error:', error)
 
-  
   await supabase
     .from('accuracy_stats')
     .insert({ scan_id: scanId, was_corrected: true })
 }
+
 export async function saveScan(
-    imageData: string,
-    ocrText: string,
-    translatedText: string,
-    distractors: string[],
-    relatedWords: {japanese: string, english: string}[]
+  imageData: string,
+  ocrText: string,
+  translatedText: string,
+  distractors: string[],
+  relatedWords: { japanese: string; english: string }[],
+  category: ScanCategory
 ): Promise<string | null> {
   const blob = await fetch(imageData).then(r => r.blob())
   const fileName = `${Date.now()}.jpg`
@@ -36,20 +39,22 @@ export async function saveScan(
   if (uploadError) {
     console.error('Upload error:', uploadError)
     return null
-}
- const { data: urlData } = supabase.storage
+  }
+
+  const { data: urlData } = supabase.storage
     .from('signs')
     .getPublicUrl(`${userId}/${fileName}`)
 
-    const { data, error } = await supabase
+  const { data, error } = await supabase
     .from('scans')
     .insert({
       user_id: userId,
       image_url: urlData.publicUrl,
       ocr_text: ocrText,
       translated_text: translatedText,
-      quiz_distractors: distractors.length === 2 ? distractors: null,
-      related_words: relatedWords.length > 0 ? relatedWords : null
+      quiz_distractors: distractors.length === 2 ? distractors : null,
+      related_words: relatedWords.length > 0 ? relatedWords : null,
+      category
     })
     .select('id')
     .single()
@@ -59,27 +64,24 @@ export async function saveScan(
     return null
   }
 
-  
   return data.id
-  
 }
 
-
-export async function deleteScan(scanId: string, imageUrl: string): Promise<boolean>{
+export async function deleteScan(scanId: string, imageUrl: string): Promise<boolean> {
   const storagePath = imageUrl.match(/\/signs\/(.+)$/)?.[1]
-  if(storagePath){
-    const{error: storageError} = await supabase.storage
-    .from('signs')
-    .remove([storagePath])
-    if(storageError){
+  if (storagePath) {
+    const { error: storageError } = await supabase.storage
+      .from('signs')
+      .remove([storagePath])
+    if (storageError) {
       console.error('Storage delete error: ', storageError)
     }
   }
-    const {error} = await supabase.from('scans').delete().eq('id',scanId)
-    if(error){
-      console.error('DB delete error:', error)
-      return false
-    }
-    return true
-}
 
+  const { error } = await supabase.from('scans').delete().eq('id', scanId)
+  if (error) {
+    console.error('DB delete error:', error)
+    return false
+  }
+  return true
+}

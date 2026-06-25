@@ -1,3 +1,12 @@
+const VALID_CATEGORIES = [
+  'food', 'transport', 'shopping', 'warning', 'public', 'nature',
+  'medical', 'entertainment', 'work', 'housing', 'seasonal', 'beauty',
+  'technology', 'religion', 'education', 'other'
+] as const
+
+export type ScanCategory = typeof VALID_CATEGORIES[number]
+
+
 export async function extractAndTranslate(imageData: string) {
   const response = await fetch('/api/ocr', {
     method: 'POST',
@@ -17,6 +26,9 @@ export async function extractAndTranslate(imageData: string) {
     if (!match) return null
     return {japanese: match[1].trim(), english: match[2].trim()}
   }).filter((w): w is { japanese: string; english: string } => w !== null)
-
-  return { original, translated, distractors: [wrong1,wrong2].filter(Boolean), relatedWords }
+  const rawCategory = text.match(/CATEGORY:\s*(.+?)(?:\n|$)/)?.[1]?.trim().toLowerCase() ?? ''
+  const category: ScanCategory = VALID_CATEGORIES.includes(rawCategory as ScanCategory)
+    ? (rawCategory as ScanCategory)
+    : 'other'
+  return { original, translated, distractors: [wrong1,wrong2].filter(Boolean), relatedWords, category }
 }

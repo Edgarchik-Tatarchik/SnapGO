@@ -2,11 +2,20 @@ interface ImagePreviewProps {
   imageData: string
   onConfirm: () => void
   onRetake: () => void
+  onGoHome: () => void
 }
 
-export function ImagePreview({ imageData, onConfirm, onRetake }: ImagePreviewProps) {
+export function ImagePreview({ imageData, onConfirm, onRetake, onGoHome }: ImagePreviewProps) {
   return (
-    <div className="flex flex-col h-screen bg-gray-900">
+    <div className="flex flex-col bg-gray-900" style={{ height: '100dvh' }}>
+      <div className="flex items-center px-4 pt-4 pb-2">
+        <button
+          onClick={onGoHome}
+          className="text-blue-400 text-sm"
+        >
+          ← メニュー
+        </button>
+      </div>
       <img src={imageData} className="flex-1 object-contain" alt="preview" />
       <div className="flex gap-4 p-6">
         <button

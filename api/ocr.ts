@@ -14,14 +14,22 @@ export default async function handler(req: Request) {
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 1024,
       messages: [{
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
           {
             type: 'text',
-            text: 'Extract ALL Japanese text from this image and translate to English. Also generate 2 plausible but INCORRECT English translations for the quiz. Then provide 3 related Japanese words or short phrases that a learner might encounter in the same context, with their English translations. Plain text only, no markdown:\nORIGINAL: [japanese text]\nTRANSLATION: [correct english translation]\nWRONG1: [plausible incorrect translation]\nWRONG2: [plausible incorrect translation]\nRELATED1: [japanese word or phrase] = [english translation]\nRELATED2: [japanese word or phrase] = [english translation]\nRELATED3: [japanese word or phrase] = [english translation]'
+            text: `Extract ALL Japanese text from this image and translate to English. Also generate 2 plausible but INCORRECT English translations for the quiz. Then provide 3 related Japanese words or short phrases that a learner might encounter in the same context, with their English translations. Finally, classify the sign into exactly one category from this fixed list: food, transport, shopping, warning, public, nature, medical, entertainment, work, housing, seasonal, beauty, technology, religion, education, other. Plain text only, no markdown:
+ORIGINAL: [japanese text]
+TRANSLATION: [correct english translation]
+WRONG1: [plausible incorrect translation]
+WRONG2: [plausible incorrect translation]
+RELATED1: [japanese word or phrase] = [english translation]
+RELATED2: [japanese word or phrase] = [english translation]
+RELATED3: [japanese word or phrase] = [english translation]
+CATEGORY: [one word from the fixed list above]`
           }
         ]
       }]

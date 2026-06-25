@@ -2,12 +2,32 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { deleteScan } from '../lib/storage'
 
+const CATEGORY_LABELS: Record<string, { emoji: string; label: string }> = {
+  food:          { emoji: '🍜', label: '食べ物・飲み物' },
+  transport:     { emoji: '🚃', label: '交通・道路' },
+  shopping:      { emoji: '🛍️', label: '買い物' },
+  warning:       { emoji: '⚠️', label: '注意・警告' },
+  public:        { emoji: '🏛️', label: '公共施設' },
+  nature:        { emoji: '🌿', label: '自然・公園' },
+  medical:       { emoji: '💊', label: '医療・薬局' },
+  entertainment: { emoji: '🎮', label: '娯楽・観光' },
+  work:          { emoji: '💼', label: 'ビジネス・会社' },
+  housing:       { emoji: '🏠', label: '住宅・不動産' },
+  seasonal:      { emoji: '🎌', label: '季節・イベント' },
+  beauty:        { emoji: '💇', label: '美容・ファッション' },
+  technology:    { emoji: '📱', label: '電気・技術' },
+  religion:      { emoji: '⛩️', label: '宗教・神社仏閣' },
+  education:     { emoji: '📚', label: '教育・学校' },
+  other:         { emoji: '📦', label: 'その他' },
+}
+
 interface Scan {
   id: string
   image_url: string
   ocr_text: string
   translated_text: string
   created_at: string
+  category: string | null
 }
 
 interface SavedScansPageProps {
@@ -23,7 +43,7 @@ export function SavedScansPage({ onBack }: SavedScansPageProps) {
     async function loadScans() {
       const { data } = await supabase
         .from('scans')
-        .select('*')
+        .select('id, image_url, ocr_text, translated_text, created_at, category')
         .order('created_at', { ascending: false })
       setScans(data ?? [])
       setLoading(false)
@@ -66,7 +86,14 @@ export function SavedScansPage({ onBack }: SavedScansPageProps) {
             <div key={scan.id} className="bg-gray-800 rounded-xl p-4 flex gap-4 items-start">
               <img src={scan.image_url} className="w-20 h-20 object-cover rounded-lg" />
               <div className="flex flex-col gap-1 flex-1">
-                <p className="text-sm text-gray-400">{new Date(scan.created_at).toLocaleDateString('ja-JP')}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-400">{new Date(scan.created_at).toLocaleDateString('ja-JP')}</p>
+                  {scan.category && CATEGORY_LABELS[scan.category] && (
+                    <span className="text-xs text-gray-400">
+                      {CATEGORY_LABELS[scan.category].emoji} {CATEGORY_LABELS[scan.category].label}
+                    </span>
+                  )}
+                </div>
                 <p className="text-white font-medium">{scan.ocr_text}</p>
                 <p className="text-blue-300 text-sm">{scan.translated_text}</p>
               </div>

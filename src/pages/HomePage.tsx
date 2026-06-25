@@ -1,3 +1,25 @@
+import { useEffect, useState } from 'react'
+import { getProgressStats } from '../lib/quiz'
+
+const CATEGORY_LABELS: Record<string, { emoji: string; label: string }> = {
+  food:          { emoji: '🍜', label: '食べ物・飲み物' },
+  transport:     { emoji: '🚃', label: '交通・道路' },
+  shopping:      { emoji: '🛍️', label: '買い物' },
+  warning:       { emoji: '⚠️', label: '注意・警告' },
+  public:        { emoji: '🏛️', label: '公共施設' },
+  nature:        { emoji: '🌿', label: '自然・公園' },
+  medical:       { emoji: '💊', label: '医療・薬局' },
+  entertainment: { emoji: '🎮', label: '娯楽・観光' },
+  work:          { emoji: '💼', label: 'ビジネス・会社' },
+  housing:       { emoji: '🏠', label: '住宅・不動産' },
+  seasonal:      { emoji: '🎌', label: '季節・イベント' },
+  beauty:        { emoji: '💇', label: '美容・ファッション' },
+  technology:    { emoji: '📱', label: '電気・技術' },
+  religion:      { emoji: '⛩️', label: '宗教・神社仏閣' },
+  education:     { emoji: '📚', label: '教育・学校' },
+  other:         { emoji: '📦', label: 'その他' },
+}
+
 interface HomePageProps {
   onStartCamera: () => void
   onViewSaved: () => void
@@ -5,32 +27,126 @@ interface HomePageProps {
   onOpenSettings: () => void
 }
 
+interface ProgressStats {
+  total: number
+  mastered: number
+  learning: number
+  byCategory: Record<string, { mastered: number; learning: number; new: number }>
+}
+
 export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOpenSettings }: HomePageProps) {
+  const [stats, setStats] = useState<ProgressStats | null>(null)
+
+  useEffect(() => {
+    getProgressStats().then(setStats)
+  }, [])
+
+  const activeCats = stats
+    ? Object.entries(stats.byCategory).filter(([, v]) => v.mastered + v.learning + v.new > 0)
+    : []
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-8 p-8 relative">
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white relative">
+
       <button
         onClick={onOpenSettings}
-        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer text-2xl"
+        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer text-sm"
       >
-        ⚙️
+        設定
       </button>
 
-      <div className="text-center">
-        <img src="/icon-228.png" className="w-40 h-40 mb-6 rounded-2xl" />
-        <h1 className="text-3xl font-bold mb-2">サインレンズ</h1>
-        <p className="text-gray-400">日本語サインを翻訳する</p>
+      <div className="flex flex-col items-center pt-12 pb-6 px-8">
+        <div className="mb-2">
+          <h1 className="text-5xl font-bold tracking-tight text-center">
+            <span className="text-white">Snap</span><span className="text-blue-400">GO</span>
+          </h1>
+        </div>
+        <h2 className="text-lg font-medium text-white mb-1">スナップ語</h2>
+        <p className="text-gray-400 text-sm">見て、撮って、覚える</p>
       </div>
-
-      <div className="flex flex-col w-full max-w-sm gap-4">
+      <div className="flex flex-col px-8 gap-3">
         <button onClick={onStartCamera} className="py-4 rounded-xl bg-blue-600 text-white text-lg font-bold cursor-pointer hover:bg-blue-500 active:scale-95 transition-all">
-          📷 写真を撮影する
+          撮影する
         </button>
-        <button onClick={onViewSaved} className="py-4 rounded-xl bg-gray-700 text-white text-lg cursor-pointer hover:bg-gray-600 active:scale-95 transition-all">
-          📂 保存された写真を見る
-        </button>
-        <button onClick={onStartQuiz} className="py-4 rounded-xl bg-purple-600 text-white text-lg cursor-pointer hover:bg-purple-500 active:scale-95 transition-all">
-          🎯 クイズに挑戦する
-        </button>
+        <div className="flex gap-3">
+          <button onClick={onViewSaved} className="flex-1 py-4 rounded-xl bg-gray-700 text-white text-base cursor-pointer hover:bg-gray-600 active:scale-95 transition-all">
+            保存した写真
+          </button>
+          <button onClick={onStartQuiz} className="flex-1 py-4 rounded-xl bg-purple-600 text-white text-base cursor-pointer hover:bg-purple-500 active:scale-95 transition-all">
+            クイズ
+          </button>
+        </div>
+      </div>
+      <div className="flex flex-col px-8 mt-6 gap-3 pb-8">
+
+        {stats && stats.total > 0 && (
+          <div className="bg-gray-800 rounded-xl p-4">
+            <p className="text-gray-400 text-xs mb-3">習得状況</p>
+            <div className="flex gap-4">
+              <div className="flex-1 text-center">
+                <p className="text-2xl font-bold text-green-400">{stats.mastered}</p>
+                <p className="text-gray-400 text-xs mt-1">習得済み</p>
+              </div>
+              <div className="w-px bg-gray-700" />
+              <div className="flex-1 text-center">
+                <p className="text-2xl font-bold text-yellow-400">{stats.learning}</p>
+                <p className="text-gray-400 text-xs mt-1">学習中</p>
+              </div>
+              <div className="w-px bg-gray-700" />
+              <div className="flex-1 text-center">
+                <p className="text-2xl font-bold text-gray-400">{stats.total - stats.mastered - stats.learning}</p>
+                <p className="text-gray-400 text-xs mt-1">未学習</p>
+              </div>
+            </div>
+
+            {stats.total > 0 && (
+              <div className="mt-3 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-green-400 rounded-full transition-all"
+                  style={{ width: `${(stats.mastered / stats.total) * 100}%` }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeCats.length > 0 && (
+          <div className="bg-gray-800 rounded-xl p-4">
+            <p className="text-gray-400 text-xs mb-3">カテゴリー別</p>
+            <div className="flex flex-col gap-2">
+              {activeCats.map(([cat, v]) => {
+                const total = v.mastered + v.learning + v.new
+                const pct = total > 0 ? (v.mastered / total) * 100 : 0
+                const info = CATEGORY_LABELS[cat]
+                return (
+                  <div key={cat}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm">
+                        {info?.emoji} {info?.label ?? cat}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {v.mastered}/{total}
+                      </span>
+                    </div>
+                    <div className="h-1 bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-green-400 rounded-full transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {stats && stats.total === 0 && (
+          <div className="bg-gray-800 rounded-xl p-6 text-center">
+            <p className="text-gray-400 text-sm">写真を撮影してから学習を始めましょう</p>
+          </div>
+        )}
+
       </div>
     </div>
   )
