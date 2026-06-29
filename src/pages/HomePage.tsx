@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getProgressStats } from '../lib/quiz'
+import { getStreakStats, type StreakStats } from '../lib/streak'
 
 const CATEGORY_LABELS: Record<string, { emoji: string; label: string }> = {
   food:          { emoji: '🍜', label: '食べ物・飲み物' },
@@ -25,6 +26,7 @@ interface HomePageProps {
   onViewSaved: () => void
   onStartQuiz: () => void
   onOpenSettings: () => void
+  onOpenStats: () => void
 }
 
 interface ProgressStats {
@@ -34,11 +36,13 @@ interface ProgressStats {
   byCategory: Record<string, { mastered: number; learning: number; new: number }>
 }
 
-export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOpenSettings }: HomePageProps) {
+export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOpenSettings, onOpenStats }: HomePageProps) {
   const [stats, setStats] = useState<ProgressStats | null>(null)
+  const [streak, setStreak] = useState<StreakStats | null>(null)
 
   useEffect(() => {
     getProgressStats().then(setStats)
+    getStreakStats().then(setStreak)
   }, [])
 
   const activeCats = stats
@@ -48,13 +52,23 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white relative">
 
-      <button
-        onClick={onOpenSettings}
-        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors cursor-pointer text-sm"
-      >
-        設定
-      </button>
+      {/* Шапка */}
+      <div className="absolute top-4 right-4 flex gap-3">
+        <button
+          onClick={onOpenStats}
+          className="text-gray-400 hover:text-white transition-colors cursor-pointer text-sm"
+        >
+          統計
+        </button>
+        <button
+          onClick={onOpenSettings}
+          className="text-gray-400 hover:text-white transition-colors cursor-pointer text-sm"
+        >
+          設定
+        </button>
+      </div>
 
+      {/* Логотип */}
       <div className="flex flex-col items-center pt-12 pb-6 px-8">
         <div className="mb-2">
           <h1 className="text-5xl font-bold tracking-tight text-center">
@@ -64,6 +78,30 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
         <h2 className="text-lg font-medium text-white mb-1">スナップ語</h2>
         <p className="text-gray-400 text-sm">見て、撮って、覚える</p>
       </div>
+
+      {/* Streak */}
+      {streak !== null && (
+        <div
+          onClick={onOpenStats}
+          className="mx-8 mb-3 bg-gray-800 rounded-xl px-4 py-3 flex items-center justify-between cursor-pointer active:scale-95 transition-all"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{streak.todayDone ? '🔥' : '⬜'}</span>
+            <div>
+              <p className="text-white font-bold">{streak.current} 日連続</p>
+              <p className="text-gray-400 text-xs">
+                {streak.todayDone ? '今日完了！' : '今日まだです'}
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-yellow-400 text-xs">🏆 最高 {streak.record} 日</p>
+            <p className="text-gray-500 text-xs mt-0.5">統計を見る →</p>
+          </div>
+        </div>
+      )}
+
+      {/* Кнопки */}
       <div className="flex flex-col px-8 gap-3">
         <button onClick={onStartCamera} className="py-4 rounded-xl bg-blue-600 text-white text-lg font-bold cursor-pointer hover:bg-blue-500 active:scale-95 transition-all">
           撮影する
@@ -77,7 +115,9 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
           </button>
         </div>
       </div>
-      <div className="flex flex-col px-8 mt-6 gap-3 pb-8">
+
+      {/* Дашборд */}
+      <div className="flex flex-col px-8 mt-4 gap-3 pb-8">
 
         {stats && stats.total > 0 && (
           <div className="bg-gray-800 rounded-xl p-4">
@@ -99,14 +139,12 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
               </div>
             </div>
 
-            {stats.total > 0 && (
-              <div className="mt-3 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-green-400 rounded-full transition-all"
-                  style={{ width: `${(stats.mastered / stats.total) * 100}%` }}
-                />
-              </div>
-            )}
+            <div className="mt-3 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-green-400 rounded-full transition-all"
+                style={{ width: `${(stats.mastered / stats.total) * 100}%` }}
+              />
+            </div>
           </div>
         )}
 

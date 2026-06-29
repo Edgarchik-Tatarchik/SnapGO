@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getRandomQuizScan, recordQuizAttempt, getScanStatus, type QuizScan, type QuizStatus } from '../lib/quiz'
+import { getRandomQuizScan, recordQuizAttempt, getScanStatus, getDueForReview, type QuizScan, type QuizStatus } from '../lib/quiz'
 
 const CATEGORY_LABELS: Record<string, { emoji: string; label: string }> = {
   food:          { emoji: '🍜', label: '食べ物・飲み物' },
@@ -21,9 +21,10 @@ const CATEGORY_LABELS: Record<string, { emoji: string; label: string }> = {
 }
 
 const STATUS_LABELS: Record<QuizStatus, { label: string; color: string }> = {
-  new:      { label: '初めて',     color: 'text-gray-400' },
-  learning: { label: '学習中',     color: 'text-yellow-400' },
-  mastered: { label: '習得済み',   color: 'text-green-400' },
+  new:      { label: '🆕 初めて',    color: 'text-gray-400' },
+  learning: { label: '🔄 学習中',    color: 'text-yellow-400' },
+  review:   { label: '🔁 復習',      color: 'text-orange-400' },
+  mastered: { label: '✅ 習得済み',  color: 'text-green-400' },
 }
 
 interface QuizPageProps {
@@ -42,6 +43,16 @@ export function QuizPage({ onExit }: QuizPageProps) {
   const [shownIds, setShownIds] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(false)
+  const [dueCount, setDueCount] = useState<number | null>(null)
+
+  
+  async function loadCategoryScreen() {
+    setScreen('category-select')
+    setEmpty(false)
+    setShownIds([])
+    const count = await getDueForReview()
+    setDueCount(count)
+  }
 
   async function startQuiz(category: string | null) {
     setSelectedCategory(category)
@@ -90,6 +101,7 @@ export function QuizPage({ onExit }: QuizPageProps) {
     setCurrentStatus(newStatus)
   }
 
+  
   if (screen === 'category-select') return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <div className="flex items-center gap-4 p-4 border-b border-gray-700">
@@ -98,6 +110,30 @@ export function QuizPage({ onExit }: QuizPageProps) {
       </div>
 
       <div className="flex flex-col gap-3 p-4">
+
+       
+        {dueCount !== null && dueCount > 0 && (
+          <div
+            onClick={() => startQuiz(null)}
+            className="py-4 px-5 rounded-xl bg-orange-600 text-white cursor-pointer hover:bg-orange-500 transition-colors active:scale-95"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-bold text-lg">🔁 今日の復習</p>
+                <p className="text-orange-200 text-sm mt-0.5">{dueCount} 個の単語が待っています</p>
+              </div>
+              <span className="text-3xl font-bold">{dueCount}</span>
+            </div>
+          </div>
+        )}
+
+        {dueCount === 0 && (
+          <div className="py-3 px-5 rounded-xl bg-gray-800 text-center">
+            <p className="text-green-400 text-sm">✅ 今日の復習は完了しています</p>
+          </div>
+        )}
+
+       
         <button
           onClick={() => startQuiz(null)}
           className="py-4 px-5 rounded-xl bg-blue-600 text-white text-left cursor-pointer hover:bg-blue-500 transition-colors"
@@ -106,6 +142,7 @@ export function QuizPage({ onExit }: QuizPageProps) {
           <span className="ml-3 font-bold">すべてのカテゴリー</span>
         </button>
 
+        
         <div className="mt-2 grid grid-cols-2 gap-3">
           {Object.entries(CATEGORY_LABELS).map(([key, { emoji, label }]) => (
             <button
@@ -130,14 +167,15 @@ export function QuizPage({ onExit }: QuizPageProps) {
 
   if (empty) return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4 p-8">
+      <p className="text-center text-2xl">🎉</p>
       <p className="text-center font-bold">
         {selectedCategory
-          ? `${CATEGORY_LABELS[selectedCategory]?.emoji} このカテゴリーは全部習得しました！`
-          : 'すべて習得しました！'}
+          ? `${CATEGORY_LABELS[selectedCategory]?.emoji} このカテゴリーは全部終わりました！`
+          : 'すべて終わりました！'}
       </p>
-      <p className="text-gray-400 text-sm text-center">新しい写真を撮ってもっと学びましょう</p>
+      <p className="text-gray-400 text-sm text-center">また後で復習の単語が追加されます</p>
       <button
-        onClick={() => { setScreen('category-select'); setEmpty(false); setShownIds([]) }}
+        onClick={loadCategoryScreen}
         className="bg-blue-600 px-6 py-3 rounded-xl mt-2 cursor-pointer hover:bg-blue-500"
       >
         カテゴリーに戻る
@@ -160,11 +198,11 @@ export function QuizPage({ onExit }: QuizPageProps) {
           )}
         </div>
         <button
-        onClick={() => { setScreen('category-select'); setEmpty(false); setShownIds([]) }}
-        className="text-blue-400 text-sm cursor-pointer hover:text-blue-300"
+          onClick={loadCategoryScreen}
+          className="text-blue-400 text-sm cursor-pointer hover:text-blue-300"
         >
-          カテゴリー一覧
-          </button>
+          ← カテゴリー一覧
+        </button>
       </div>
 
       <img src={current?.image_url} className="w-full max-h-48 object-contain rounded-xl" />
@@ -200,6 +238,11 @@ export function QuizPage({ onExit }: QuizPageProps) {
         <div className="mt-auto flex flex-col gap-2">
           <p className={`text-center text-sm ${STATUS_LABELS[currentStatus].color}`}>
             {STATUS_LABELS[currentStatus].label}
+            {currentStatus === 'review' || currentStatus === 'learning' ? (
+              <span className="text-gray-500 text-xs ml-2">
+                {currentStatus === 'review' ? '— 次回: 明日以降' : '— 次回: 後で'}
+              </span>
+            ) : null}
           </p>
           <button
             onClick={() => loadNext(shownIds)}

@@ -5,8 +5,9 @@ import { ScanPage } from './pages/ScanPage'
 import { SavedScansPage } from './pages/SavedScansPage'
 import { QuizPage } from './pages/QuizPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { StatsPage } from './pages/StatsPage'
 
-type AppScreen = 'home' | 'scan' | 'saved' | 'quiz' | 'settings'
+type AppScreen = 'home' | 'scan' | 'saved' | 'quiz' | 'settings' | 'stats'
 
 function App() {
   useAuth()
@@ -18,6 +19,7 @@ function App() {
       onViewSaved={() => setScreen('saved')}
       onStartQuiz={() => setScreen('quiz')}
       onOpenSettings={() => setScreen('settings')}
+      onOpenStats={() => setScreen('stats')}
     />
   )
 
@@ -35,6 +37,10 @@ function App() {
 
   if (screen === 'settings') return (
     <SettingsPage onBack={() => setScreen('home')} />
+  )
+
+  if (screen === 'stats') return (
+  <StatsPage onBack={() => setScreen('home')} onStartQuiz={() => setScreen('quiz')} />
   )
 }
 
