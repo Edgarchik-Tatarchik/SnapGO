@@ -20,15 +20,15 @@ SnapGO is not just a translator. It's a learning app that turns real-world photo
 
 ## スクリーンショット / Screenshots
 
-| ホーム画面 | カメラ | スキャン結果 |
+
 |:---:|:---:|:---:|
 | ![Menu](docs/screenshots/photo1.jpeg) | ![Camera](docs/screenshots/photo2.jpeg) | ![Result](docs/screenshots/photo3.jpeg) |
-| メインメニュー | カメラ起動・ピンチズーム対応 | OCR + 翻訳 + カテゴリー自動分類 |
 
-| 修正フォーム | 保存履歴 | 統計ダッシュボード |
+
+
 |:---:|:---:|:---:|
 | ![More example](docs/screenshots/photo4.jpeg) | ![Confirm](docs/screenshots/photo5.jpeg) | ![History](docs/screenshots/photo6.jpeg) |
-| 翻訳修正フォーム | カテゴリー別検索・フィルター | ストリーク・SRS進捗・正答率 |
+
 
 ---
 
