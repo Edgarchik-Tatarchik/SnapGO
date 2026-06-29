@@ -2,7 +2,7 @@
 **写真で日本語を学ぶPWAアプリ — v1.1.0**  
 **A PWA for learning Japanese through real-world photos**
 
-🔗 **Live Demo:** [sign-lens-alpha.vercel.app](https://sign-lens-alpha.vercel.app)
+🔗 **Live Demo:** [snap-go-alpha.vercel.app](https://snap-go-alpha.vercel.app)
 
 ---
 
