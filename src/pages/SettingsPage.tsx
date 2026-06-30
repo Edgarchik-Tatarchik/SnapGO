@@ -82,7 +82,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
                       <div className="bg-gray-800 rounded-xl p-4 flex flex-col gap-2">
                         <div className="flex justify-between">
                           <p className="text-gray-400 text-sm">バージョン</p>
-                          <p className="text-white text-sm">1.2.0</p>
+                          <p className="text-white text-sm">1.3.0</p>
                           </div>
                           <div className="flex justify-between">
                             <p className="text-gray-400 text-sm">© 2026</p>

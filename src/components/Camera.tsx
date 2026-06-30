@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { useCamera, GUIDE_WIDTH_PCT, MIN_GUIDE_HEIGHT_PCT, MAX_GUIDE_HEIGHT_PCT, MIN_ZOOM, MAX_ZOOM } from '../hooks/useCamera'
+import { useGeolocation, type Coords } from '../hooks/useGeolocation'
 import { useTranslation } from 'react-i18next'
 
 interface CameraProps {
-  onCapture: (imageData: string) => void
+  onCapture: (imageData: string, coords: Coords | null) => void
   onGoHome: () => void
 }
 
@@ -15,6 +16,8 @@ export function Camera({ onCapture, onGoHome }: CameraProps) {
     guideHeightPct, resizeGuide,
     zoom, applyZoom
   } = useCamera()
+
+  const { showExplainer, checkAndRequest, confirmExplainer, dismissExplainer } = useGeolocation()
 
   const containerRef = useRef<HTMLDivElement>(null)
   const pinchStartDistRef = useRef<number | null>(null)
@@ -34,8 +37,14 @@ export function Camera({ onCapture, onGoHome }: CameraProps) {
 
   const onCaptureRef = useRef(onCapture)
   useEffect(() => { onCaptureRef.current = onCapture }, [onCapture])
+
+
   useEffect(() => {
-    if (capturedImage) onCaptureRef.current(capturedImage)
+    if (!capturedImage) return
+
+    checkAndRequest((coords) => {
+      onCaptureRef.current(capturedImage, coords)
+    })
   }, [capturedImage])
 
   useEffect(() => {
@@ -186,12 +195,45 @@ export function Camera({ onCapture, onGoHome }: CameraProps) {
             const file = e.target.files?.[0]
             if (!file) return
             const reader = new FileReader()
-            reader.onload = (ev) => onCapture(ev.target?.result as string)
+            reader.onload = (ev) => {
+              const imageData = ev.target?.result as string
+              checkAndRequest((coords) => onCapture(imageData, coords))
+            }
             reader.onerror = () => console.error('ファイルの読み込みに失敗しました')
             reader.readAsDataURL(file)
           }}
         />
       </label>
+      {showExplainer && (
+        <div className="absolute inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
+          <div className="bg-gray-800 rounded-2xl p-6 max-w-sm">
+            <p className="text-3xl mb-3 text-center">📍</p>
+            <h3 className="text-white font-bold text-lg mb-2 text-center">位置情報を使いますか？</h3>
+            <p className="text-gray-300 text-sm text-center mb-6">
+              位置情報を許可すると、撮影した場所が地図に記録され、自分の学習履歴を地図上で確認できます。
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => confirmExplainer((coords) => {
+                  if (capturedImage) onCaptureRef.current(capturedImage, coords)
+                })}
+                className="py-3 rounded-xl bg-blue-600 text-white font-bold cursor-pointer hover:bg-blue-500 transition-colors"
+              >
+                許可する
+              </button>
+              <button
+                onClick={() => {
+                  dismissExplainer()
+                  if (capturedImage) onCaptureRef.current(capturedImage, null)
+                }}
+                className="py-3 rounded-xl bg-gray-700 text-gray-300 cursor-pointer hover:bg-gray-600 transition-colors"
+              >
+                許可しない
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

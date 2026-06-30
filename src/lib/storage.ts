@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 import type { ScanCategory } from './ocr'
-
+import type { Coords } from '../hooks/useGeolocation'
 
 export async function saveCorrection(
   scanId: string,
@@ -23,7 +23,8 @@ export async function saveScan(
   translatedText: string,
   distractors: string[],
   relatedWords: { japanese: string; english: string }[],
-  category: ScanCategory
+  category: ScanCategory,
+  coords: Coords | null
 ): Promise<string | null> {
   const blob = await fetch(imageData).then(r => r.blob())
   const fileName = `${Date.now()}.jpg`
@@ -54,7 +55,9 @@ export async function saveScan(
       translated_text: translatedText,
       quiz_distractors: distractors.length === 2 ? distractors : null,
       related_words: relatedWords.length > 0 ? relatedWords : null,
-      category
+      category,
+      latitude: coords?.latitude ?? null,
+      longitude: coords?.longitude ?? null
     })
     .select('id')
     .single()

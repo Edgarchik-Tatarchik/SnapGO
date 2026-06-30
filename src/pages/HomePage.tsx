@@ -27,6 +27,7 @@ interface HomePageProps {
   onStartQuiz: () => void
   onOpenSettings: () => void
   onOpenStats: () => void
+  onOpenMap: () => void
 }
 
 interface ProgressStats {
@@ -36,7 +37,7 @@ interface ProgressStats {
   byCategory: Record<string, { mastered: number; learning: number; new: number }>
 }
 
-export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOpenSettings, onOpenStats }: HomePageProps) {
+export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOpenSettings, onOpenStats, onOpenMap }: HomePageProps) {
   const [stats, setStats] = useState<ProgressStats | null>(null)
   const [streak, setStreak] = useState<StreakStats | null>(null)
 
@@ -52,7 +53,6 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white relative">
 
-      {/* Шапка */}
       <div className="absolute top-4 right-4 flex gap-3">
         <button
           onClick={onOpenStats}
@@ -68,7 +68,6 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
         </button>
       </div>
 
-      {/* Логотип */}
       <div className="flex flex-col items-center pt-12 pb-6 px-8">
         <div className="mb-2">
           <h1 className="text-5xl font-bold tracking-tight text-center">
@@ -79,7 +78,6 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
         <p className="text-gray-400 text-sm">見て、撮って、覚える</p>
       </div>
 
-      {/* Streak */}
       {streak !== null && (
         <div
           onClick={onOpenStats}
@@ -101,7 +99,6 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
         </div>
       )}
 
-      {/* Кнопки */}
       <div className="flex flex-col px-8 gap-3">
         <button onClick={onStartCamera} className="py-4 rounded-xl bg-blue-600 text-white text-lg font-bold cursor-pointer hover:bg-blue-500 active:scale-95 transition-all">
           撮影する
@@ -114,9 +111,11 @@ export default function HomePage({ onStartCamera, onViewSaved, onStartQuiz, onOp
             クイズ
           </button>
         </div>
+        <button onClick={onOpenMap} className="py-4 rounded-xl bg-teal-600 text-white text-base cursor-pointer hover:bg-teal-500 active:scale-95 transition-all">
+          🗺️ 地図で見る
+        </button>
       </div>
 
-      {/* Дашборд */}
       <div className="flex flex-col px-8 mt-4 gap-3 pb-8">
 
         {stats && stats.total > 0 && (

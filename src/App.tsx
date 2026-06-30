@@ -6,19 +6,21 @@ import { SavedScansPage } from './pages/SavedScansPage'
 import { QuizPage } from './pages/QuizPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { StatsPage } from './pages/StatsPage'
+import { MapPage } from './pages/MapPage'
 
-type AppScreen = 'home' | 'scan' | 'saved' | 'quiz' | 'settings' | 'stats'
+type AppScreen = 'home' | 'scan' | 'saved' | 'quiz' | 'settings' | 'stats' | 'map'
 
 function App() {
   useAuth()
   const initialScreen = (): AppScreen => {
-  const params = new URLSearchParams(window.location.search)
-  const s = params.get('screen')
-  if (s === 'quiz' || s === 'stats' || s === 'saved') return s
-  return 'home'
-}
+    const params = new URLSearchParams(window.location.search)
+    const s = params.get('screen')
+    if (s === 'quiz' || s === 'stats' || s === 'saved' || s === 'map') return s
+    return 'home'
+  }
 
   const [screen, setScreen] = useState<AppScreen>(initialScreen)
+
   if (screen === 'home') return (
     <HomePage
       onStartCamera={() => setScreen('scan')}
@@ -26,6 +28,7 @@ function App() {
       onStartQuiz={() => setScreen('quiz')}
       onOpenSettings={() => setScreen('settings')}
       onOpenStats={() => setScreen('stats')}
+      onOpenMap={() => setScreen('map')}
     />
   )
 
@@ -46,7 +49,11 @@ function App() {
   )
 
   if (screen === 'stats') return (
-  <StatsPage onBack={() => setScreen('home')} onStartQuiz={() => setScreen('quiz')} />
+    <StatsPage onBack={() => setScreen('home')} onStartQuiz={() => setScreen('quiz')} />
+  )
+
+  if (screen === 'map') return (
+    <MapPage onBack={() => setScreen('home')} />
   )
 }
 
