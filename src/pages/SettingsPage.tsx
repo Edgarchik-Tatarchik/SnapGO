@@ -59,10 +59,11 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             disabled={toggling}
             className={`w-12 h-6 rounded-full transition-colors duration-200 relative cursor-pointer disabled:opacity-50 flex-shrink-0 ${
               pushEnabled ? 'bg-blue-600' : 'bg-gray-600'
-            }`}>
-              <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ${
-                pushEnabled ? 'translate-x-6' : 'translate-x-1'
-                }`} />
+              }`}>
+                <span
+                className="absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-200"
+                style={{ left: pushEnabled ? '26px' : '4px' }}
+                />
                 </button>
               )}
               </div>
