@@ -6,8 +6,38 @@ const VALID_CATEGORIES = [
 
 export type ScanCategory = typeof VALID_CATEGORIES[number]
 
+export class UnsafeContentError extends Error {
+  constructor() {
+    super('UNSAFE_CONTENT')
+    this.name = 'UnsafeContentError'
+  }
+}
+
+async function checkModeration(imageData: string): Promise<boolean> {
+  try {
+    const response = await fetch('/api/moderate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageData })
+    })
+
+    if (!response.ok) return false 
+
+    const data = await response.json()
+    return data.safe === true
+  } catch {
+    return false 
+  }
+}
 
 export async function extractAndTranslate(imageData: string) {
+  
+  const isSafe = await checkModeration(imageData)
+  if (!isSafe) {
+    throw new UnsafeContentError()
+  }
+
+  
   const response = await fetch('/api/ocr', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -21,14 +51,16 @@ export async function extractAndTranslate(imageData: string) {
   const translated = text.match(/TRANSLATION:\s*(.+?)(?:\n|$)/s)?.[1]?.trim() ?? ''
   const wrong1 = text.match(/WRONG1:\s*(.+?)(?:\n|$)/)?.[1]?.trim() ?? ''
   const wrong2 = text.match(/WRONG2:\s*(.+?)(?:\n|$)/)?.[1]?.trim() ?? ''
-  const relatedWords = [1,2,3].map(i=>{
+  const relatedWords = [1, 2, 3].map(i => {
     const match = text.match(new RegExp(`RELATED${i}:\\s*(.+?)\\s*=\\s*(.+?)(?:\\n|$)`))
     if (!match) return null
-    return {japanese: match[1].trim(), english: match[2].trim()}
+    return { japanese: match[1].trim(), english: match[2].trim() }
   }).filter((w): w is { japanese: string; english: string } => w !== null)
+
   const rawCategory = text.match(/CATEGORY:\s*(.+?)(?:\n|$)/)?.[1]?.trim().toLowerCase() ?? ''
   const category: ScanCategory = VALID_CATEGORIES.includes(rawCategory as ScanCategory)
     ? (rawCategory as ScanCategory)
     : 'other'
-  return { original, translated, distractors: [wrong1,wrong2].filter(Boolean), relatedWords, category }
+
+  return { original, translated, distractors: [wrong1, wrong2].filter(Boolean), relatedWords, category }
 }

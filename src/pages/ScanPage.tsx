@@ -6,7 +6,7 @@ import { saveScan, saveCorrection } from '../lib/storage'
 import type { ScanCategory } from '../lib/ocr'
 import type { Coords } from '../hooks/useGeolocation'
 
-type Step = 'camera' | 'preview' | 'processing' | 'result'
+type Step = 'camera' | 'preview' | 'processing' | 'result' | 'unsafe'
 
 interface ScanPageProps {
   onGoHome: () => void
@@ -20,7 +20,7 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
   const [scannedCategory, setScannedCategory] = useState<ScanCategory>('other')
   const [correction, setCorrection] = useState('')
   const [correctionSaved, setCorrectionSaved] = useState(false)
-  const { original, translated, runOCR } = useOCR()
+  const { original, translated, state: ocrState, runOCR } = useOCR()
 
   const handleCapture = (data: string, capturedCoords: Coords | null) => {
     setImageData(data)
@@ -69,11 +69,34 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
     <ImagePreview imageData={imageData} onConfirm={handleConfirm} onRetake={handleRetake} onGoHome={onGoHome} />
   )
 
-  if (step === 'processing') return (
-    <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
-      <p className="text-xl">認識中...</p>
-    </div>
-  )
+  if (step === 'processing') {
+    if (ocrState === 'unsafe') {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4 p-8">
+          <p className="text-4xl">🚫</p>
+          <p className="text-center font-bold">この写真は処理できません</p>
+          <p className="text-gray-400 text-sm text-center">
+            不適切なコンテンツが検出されました。別の写真を撮影してください。
+          </p>
+          <button
+            onClick={handleRetake}
+            className="bg-blue-600 px-6 py-3 rounded-xl mt-2 cursor-pointer hover:bg-blue-500"
+          >
+            もう一度撮影する
+          </button>
+          <button onClick={onGoHome} className="text-gray-400 text-sm cursor-pointer">
+            メニューに戻る
+          </button>
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+        <p className="text-xl">認識中...</p>
+      </div>
+    )
+  }
 
   if (step === 'result') return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white p-6 gap-4 pb-8">

@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react'
-import { extractAndTranslate } from '../lib/ocr'
+import { extractAndTranslate, UnsafeContentError } from '../lib/ocr'
 import type { ScanCategory } from '../lib/ocr'
 
-type OCRState = 'idle' | 'processing' | 'done' | 'error'
+type OCRState = 'idle' | 'processing' | 'done' | 'error' | 'unsafe'
 
 export function useOCR() {
   const [state, setState] = useState<OCRState>('idle')
@@ -12,7 +12,13 @@ export function useOCR() {
 
   const runOCR = useCallback(async (
     imageData: string,
-    onDone?: (original: string, translated: string, distractors: string[],relatedWords: { japanese: string; english: string }[], category: ScanCategory) => void
+    onDone?: (
+      original: string,
+      translated: string,
+      distractors: string[],
+      relatedWords: { japanese: string; english: string }[],
+      category: ScanCategory
+    ) => void
   ) => {
     try {
       setState('processing')
@@ -22,6 +28,10 @@ export function useOCR() {
       setState('done')
       onDone?.(result.original, result.translated, result.distractors, result.relatedWords, result.category)
     } catch (err) {
+      if (err instanceof UnsafeContentError) {
+        setState('unsafe')
+        return
+      }
       console.error(err)
       setError('認識に失敗しました')
       setState('error')
