@@ -46,8 +46,10 @@ SnapGO is not just a translator. It's a learning app that turns real-world photo
 |  復習キュー | 学習状態（新規・学習中・復習待ち・習得済み）を自動管理 |
 |  ストリーク | 連続学習日数を記録。JST対応 |
 |  統計ダッシュボード | 正答率・週間アクティビティ・習得推移・苦手単語TOP5 |
+|  位置情報マップ | 撮影場所をカテゴリー別マーカーで地図上に可視化 |
+|  プッシュ通知 | 週次まとめ＋ストリーク・復習リマインダー |
 |  検索・フィルター | 日本語・翻訳・カテゴリーで履歴を絞り込み |
-|  スキャン保存 | 画像・テキスト・カテゴリーをSupabaseに保存 |
+|  スキャン保存 | 画像・テキスト・カテゴリー・位置情報をSupabaseに保存 |
 |  翻訳修正 | ユーザーが翻訳を修正→フィードバックループ形成 |
 |  PWA対応 | ホーム画面に追加でネイティブアプリのように動作 |
 |  匿名認証 | アカウント登録不要、即座に使用可能 |
@@ -61,10 +63,13 @@ SnapGO is not just a translator. It's a learning app that turns real-world photo
 - Vite
 - Tailwind CSS
 - i18next
+- Leaflet + react-leaflet（地図表示）
 
 **AI / Backend**
 - Claude Haiku API（Vision OCR + 翻訳 + カテゴリー分類）
 - Vercel Edge Functions（APIプロキシ）
+- Vercel Cron Jobs（週次・日次プッシュ通知）
+- web-push（プッシュ通知配信）
 
 **Infrastructure**
 - Supabase（PostgreSQL + Auth + Storage）
@@ -72,9 +77,10 @@ SnapGO is not just a translator. It's a learning app that turns real-world photo
 - Vercel（静的ホスティング + CDN）
 
 **主なテーブル / Key Tables**
-- `scans` — スキャン履歴（画像URL・OCRテキスト・翻訳・カテゴリー）
+- `scans` — スキャン履歴（画像URL・OCRテキスト・翻訳・カテゴリー・位置情報）
 - `quiz_attempts` — クイズ回答履歴（streak・正答率の計算に使用）
 - `srs_state` — SM-2状態（interval_days・ease_factor・next_review_at）
+- `push_subscriptions` — プッシュ通知購読情報
 
 ---
 
@@ -133,10 +139,22 @@ vercel --prod      # Production deploy
 
 ## バージョン履歴 / Changelog
 
+### v1.3.0 — 位置情報マップ / Geo-Tagged Map
+- スキャン位置（緯度・経度）を記録
+- 位置情報の利用許可を説明するモーダルを追加
+- Leaflet + CartoDB Dark Matterによるインタラクティブマップ
+- カテゴリー別マーカー表示・自動ズーム・カテゴリーフィルター
+
+### v1.2.0 — エンゲージメント機能 / Engagement Features
+- ストリーク機能（連続学習日数の記録、JST対応）
+- 統計ダッシュボード刷新（週間アクティビティグラフ・習得推移グラフ）
+- 苦手単語TOP5の自動集計
+- 復習待ち単語の可視化と直接クイズへの導線
+- プッシュ通知をストリーク・復習リマインダーに対応
+
 ### v1.1.0 — 学習システム全面刷新 / Learning System Overhaul
 - SM-2アルゴリズムによるSRS実装（srs_stateテーブル）
 - 16カテゴリー自動分類（Claude APIで分類）
-- ストリーク・統計ダッシュボード（週間グラフ・習得推移）
 - カテゴリー別クイズ・復習キュー
 - スキャン履歴の検索・カテゴリーフィルター
 - カメラのピンチズーム・枠リサイズ対応
@@ -153,8 +171,7 @@ vercel --prod      # Production deploy
 ## 今後の予定 / Roadmap
 
 - [ ] 英語UIへの完全対応
-- [ ] ジオタグ＋マップ機能（撮影場所で語彙を可視化）
-- [ ] フルダッシュボード（グラフ・週次レポート）
+- [ ] App Store / Google Playへのリリース
 
 ---
 
