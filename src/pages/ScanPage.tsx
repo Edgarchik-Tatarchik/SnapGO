@@ -4,6 +4,7 @@ import { ImagePreview } from '../components/ImagePreview'
 import { useOCR } from '../hooks/useOCR'
 import { saveScan, saveCorrection } from '../lib/storage'
 import type { ScanCategory } from '../lib/ocr'
+import type { Coords } from '../hooks/useGeolocation'
 
 type Step = 'camera' | 'preview' | 'processing' | 'result'
 
@@ -14,14 +15,16 @@ interface ScanPageProps {
 export function ScanPage({ onGoHome }: ScanPageProps) {
   const [step, setStep] = useState<Step>('camera')
   const [imageData, setImageData] = useState<string | null>(null)
+  const [coords, setCoords] = useState<Coords | null>(null)
   const [scanId, setScanId] = useState<string | null>(null)
   const [scannedCategory, setScannedCategory] = useState<ScanCategory>('other')
   const [correction, setCorrection] = useState('')
   const [correctionSaved, setCorrectionSaved] = useState(false)
   const { original, translated, runOCR } = useOCR()
 
-  const handleCapture = (data: string) => {
+  const handleCapture = (data: string, capturedCoords: Coords | null) => {
     setImageData(data)
+    setCoords(capturedCoords)
     setStep('preview')
   }
 
@@ -39,7 +42,7 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
     category: ScanCategory
   ) => {
     setScannedCategory(category)
-    const id = await saveScan(imageData!, orig, trans, distractors, relatedWords, category)
+    const id = await saveScan(imageData!, orig, trans, distractors, relatedWords, category, coords)
     setScanId(id)
     setStep('result')
   }
@@ -52,6 +55,7 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
 
   const handleRetake = () => {
     setImageData(null)
+    setCoords(null)
     setScanId(null)
     setCorrection('')
     setCorrectionSaved(false)
@@ -62,8 +66,9 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
   if (step === 'camera') return <Camera onCapture={handleCapture} onGoHome={onGoHome} />
 
   if (step === 'preview' && imageData) return (
-  <ImagePreview imageData={imageData} onConfirm={handleConfirm} onRetake={handleRetake} onGoHome={onGoHome} />
+    <ImagePreview imageData={imageData} onConfirm={handleConfirm} onRetake={handleRetake} onGoHome={onGoHome} />
   )
+
   if (step === 'processing') return (
     <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
       <p className="text-xl">認識中...</p>
@@ -71,7 +76,7 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
   )
 
   if (step === 'result') return (
-  <div className="flex flex-col min-h-screen bg-gray-900 text-white p-6 gap-4 pb-8">
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white p-6 gap-4 pb-8">
       <img src={imageData!} className="w-full max-h-48 object-contain rounded-xl" />
 
       <div className="bg-gray-800 rounded-xl p-4">
@@ -84,10 +89,13 @@ export function ScanPage({ onGoHome }: ScanPageProps) {
         <p className="text-white text-lg">{translated}</p>
       </div>
 
-      <div className="bg-gray-800 rounded-xl p-3">
+      <div className="bg-gray-800 rounded-xl p-3 flex items-center justify-between">
         <p className="text-gray-500 text-xs">
           カテゴリー: {scannedCategory}
         </p>
+        {coords && (
+          <p className="text-gray-500 text-xs">📍 位置情報あり</p>
+        )}
       </div>
 
       {!correctionSaved ? (
