@@ -61,7 +61,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
               pushEnabled ? 'bg-blue-600' : 'bg-gray-600'
             }`}>
               <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ${
-                pushEnabled ? 'translate-x-7' : 'translate-x-1'
+                pushEnabled ? 'translate-x-6' : 'translate-x-1'
                 }`} />
                 </button>
               )}
@@ -81,11 +81,11 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
                       <div className="bg-gray-800 rounded-xl p-4 flex flex-col gap-2">
                         <div className="flex justify-between">
                           <p className="text-gray-400 text-sm">バージョン</p>
-                          <p className="text-white text-sm">1.1.0</p>
+                          <p className="text-white text-sm">1.2.0</p>
                           </div>
                           <div className="flex justify-between">
                             <p className="text-gray-400 text-sm">© 2026</p>
-                            <p className="text-white text-sm">SignLens</p>
+                            <p className="text-white text-sm">スナップ語™</p>
                 </div>
         </div>
       </div>

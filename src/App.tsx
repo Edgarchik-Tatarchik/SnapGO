@@ -11,8 +11,14 @@ type AppScreen = 'home' | 'scan' | 'saved' | 'quiz' | 'settings' | 'stats'
 
 function App() {
   useAuth()
-  const [screen, setScreen] = useState<AppScreen>('home')
+  const initialScreen = (): AppScreen => {
+  const params = new URLSearchParams(window.location.search)
+  const s = params.get('screen')
+  if (s === 'quiz' || s === 'stats' || s === 'saved') return s
+  return 'home'
+}
 
+  const [screen, setScreen] = useState<AppScreen>(initialScreen)
   if (screen === 'home') return (
     <HomePage
       onStartCamera={() => setScreen('scan')}

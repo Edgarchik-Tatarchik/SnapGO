@@ -46,7 +46,7 @@ export default async function handler(req: Request) {
 
             if (isInactive) {
                 await sendPush(sub.subscription, {
-                    title: 'SignLens 👋',
+                    title: 'SnapGO 👋',
                     body: 'しばらく練習していませんね。クイズで腕試ししませんか？',
                     url: '/?screen=quiz'
                 })
@@ -77,7 +77,7 @@ export default async function handler(req: Request) {
             const greeting = getGreeting()
 
             await sendPush(sub.subscription, {
-                title: `SignLens ${greeting}`,
+                title: `SnapGO ${greeting}`,
                 body: `今週のまとめ:\n📸 写真: ${scans.length}枚 ✅ 正解: ${correct}問 ❌ 不正解: ${incorrect}問${words ? ` 💡 単語: ${words}` : ''}`,
                 url: '/?screen=quiz'
             })
